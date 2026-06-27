@@ -1,0 +1,32 @@
+name: Deploy WordPress
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy via rsync
+        uses: burnett01/rsync-deployments@7.0.2
+        with:
+          switches: -avz --delete --exclude='.git*' --exclude='.github'
+          path: ./
+          remote_path: /home/archive/wordpress/
+          remote_host: 85.143.101.97
+          remote_user: archive
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Restart containers
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: 85.143.101.97
+          username: archive
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/archive/wordpress
+            docker compose up -d
