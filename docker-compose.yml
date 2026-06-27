@@ -12,7 +12,7 @@ services:
       - db_data:/var/lib/mysql
 
   wordpress:
-    image: wordpress:6.7-fpm-alpine
+    image: wordpress:fpm-alpine
     container_name: wp-app
     restart: unless-stopped
     environment:
