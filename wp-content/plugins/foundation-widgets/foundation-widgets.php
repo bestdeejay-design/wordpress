@@ -115,11 +115,11 @@ add_action("widgets_init", function () {
 add_action("wp_enqueue_scripts", function () {
     wp_add_inline_style("spbgti-style", "
 .fw-toc ul { list-style:none; margin:0; padding:0; }
-.fw-toc li { margin:0; padding:2px 0; }
-.fw-toc a { color:var(--text); text-decoration:none; font-size:0.85rem; display:block; padding:2px 4px; border-radius:4px; transition:background 0.2s; }
-.fw-toc a:hover { background:var(--accent-soft); }
-.fw-toc-l2 { padding-left:12px; }
-.fw-toc-l3 { padding-left:24px; }
+.fw-toc li { margin:0; padding:0; }
+.fw-toc a { color:var(--text-muted); text-decoration:none; font-size:0.85rem; display:block; padding:6px 10px; border-radius:8px; transition:all 0.2s; border-left:2px solid transparent; }
+.fw-toc a:hover { color:var(--primary); background:var(--accent-soft); border-left-color:var(--accent); }
+.fw-toc-l2 a { padding-left:24px; }
+.fw-toc-l3 a { padding-left:36px; }
 .fw-partner { display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--border); }
 .fw-partner:last-child { border-bottom:none; }
 .fw-partner-logo img { width:40px; height:40px; object-fit:contain; border-radius:4px; }
