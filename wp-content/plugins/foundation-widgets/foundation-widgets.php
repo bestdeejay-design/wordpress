@@ -111,3 +111,20 @@ add_action("widgets_init", function () {
     register_widget("FW_TOC_Widget");
     register_widget("FW_Partners_Widget");
 });
+
+add_action("wp_enqueue_scripts", function () {
+    wp_add_inline_style("spbgti-style", "
+.fw-toc ul { list-style:none; margin:0; padding:0; }
+.fw-toc li { margin:0; padding:2px 0; }
+.fw-toc a { color:var(--text); text-decoration:none; font-size:0.85rem; display:block; padding:2px 4px; border-radius:4px; transition:background 0.2s; }
+.fw-toc a:hover { background:var(--accent-soft); }
+.fw-toc-l2 { padding-left:12px; }
+.fw-toc-l3 { padding-left:24px; }
+.fw-partner { display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--border); }
+.fw-partner:last-child { border-bottom:none; }
+.fw-partner-logo img { width:40px; height:40px; object-fit:contain; border-radius:4px; }
+.fw-partner-info h4 { margin:0 0 2px; font-size:0.9rem; }
+.fw-partner-cat { font-size:0.7rem; color:var(--text-muted); }
+.fw-partner-desc { margin:4px 0 0; font-size:0.8rem; color:var(--text-muted); }
+");
+});
