@@ -374,7 +374,7 @@ add_shortcode('programs_list', function () {
             echo '<div class="initiative-item">';
             if ($tag_text) echo '<span class="tag">' . esc_html($tag_text) . '</span>';
             echo '<h4>' . get_the_title() . '</h4>';
-            echo '<p>' . (get_the_excerpt() ?: get_the_content()) . '</p>';
+        echo '<p>' . (get_the_content() ?: get_the_excerpt()) . '</p>';
             echo '</div>';
         }
 
