@@ -128,7 +128,7 @@ add_action("wp_enqueue_scripts", function () {
 .fw-partner-cat { font-size:0.7rem; color:var(--text-muted); }
 .fw-partner-desc { margin:4px 0 0; font-size:0.8rem; color:var(--text-muted); }
 ");
-});
+}, 20);
 
 add_filter("the_content", function ($content) {
     if (!is_singular()) return $content;
