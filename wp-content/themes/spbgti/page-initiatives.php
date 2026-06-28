@@ -20,9 +20,7 @@ get_header(); while (have_posts()) : the_post(); ?>
     </aside>
 
     <main class="center-content">
-      <div class="content-section">
-        <?php the_content(); ?>
-      </div>
+      <?php the_content(); ?>
     </main>
 
     <aside class="sidebar sidebar-right">
