@@ -16,7 +16,10 @@ class FW_TOC_Widget extends WP_Widget {
         if (!is_singular()) return;
         $post_id = get_the_ID();
         $content = get_post_field("post_content", $post_id);
-        if (!$content) return;
+        if ($content) {
+            $content = do_shortcode($content);
+        }
+        $content = apply_filters("fw_toc_content", $content, $post_id);
 
         preg_match_all("/<h([1-3])(?:[^>]*)>(.+?)<\/h[1-3]>/si", $content, $matches, PREG_SET_ORDER);
         if (empty($matches)) return;

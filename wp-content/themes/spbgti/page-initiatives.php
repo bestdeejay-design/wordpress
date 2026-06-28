@@ -19,7 +19,9 @@ get_header(); while (have_posts()) : the_post(); ?>
     </aside>
 
     <main class="center-content">
-      <?php echo do_shortcode('[initiatives_list]'); ?>
+      <div class="content-section">
+        <?php the_content(); ?>
+      </div>
     </main>
 
     <aside class="sidebar sidebar-right">
