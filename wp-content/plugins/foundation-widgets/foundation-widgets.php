@@ -114,6 +114,8 @@ add_action("widgets_init", function () {
 
 add_action("wp_enqueue_scripts", function () {
     wp_add_inline_style("spbgti-style", "
+html { overflow-x:hidden; }
+body { overflow-x:visible; }
 .sidebar-right .widget_fw_toc { position:sticky; top:70px; }
 .fw-toc ul { list-style:none; margin:0; padding:0; }
 .fw-toc li { margin:0; padding:0; }
