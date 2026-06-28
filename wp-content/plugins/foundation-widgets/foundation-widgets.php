@@ -97,7 +97,14 @@ class FW_Partners_Widget extends WP_Widget {
                 echo '<div class="fw-partner-logo">' . get_the_post_thumbnail(get_the_ID(), "thumbnail") . '</div>';
             }
             echo '<div class="fw-partner-info">';
-            echo '<h4 class="fw-partner-title">' . get_the_title() . '</h4>';
+            $purl = get_post_meta(get_the_ID(), "partner_url", true);
+            $ptitle = get_the_title();
+            if ($purl) {
+                $ptitle = '<a href="' . esc_url($purl) . '" target="_blank" rel="noopener">' . $ptitle . '</a>';
+            } else {
+                $ptitle = '<a href="' . esc_url(home_url("/partners/")) . '">' . $ptitle . '</a>';
+            }
+            echo '<h4 class="fw-partner-title">' . $ptitle . '</h4>';
             if ($cat_name) echo '<span class="fw-partner-cat">' . esc_html($cat_name) . '</span>';
             $excerpt = get_the_excerpt();
             if ($excerpt) echo '<p class="fw-partner-desc">' . esc_html($excerpt) . '</p>';

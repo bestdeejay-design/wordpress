@@ -451,6 +451,24 @@ add_filter('manage_edit-partner_sortable_columns', function ($columns) {
     return $columns;
 });
 
+// Partner website URL meta box
+add_action('add_meta_boxes', function () {
+    add_meta_box('partner_url', 'Сайт партнёра', function ($post) {
+        $url = get_post_meta($post->ID, 'partner_url', true);
+        echo '<p><label>URL сайта:<br><input type="url" name="partner_url" value="' . esc_attr($url) . '" style="width:100%" placeholder="https://example.com"></label></p>';
+    }, 'partner', 'normal', 'default');
+});
+
+add_action('save_post_partner', function ($post_id) {
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+    $url = isset($_POST['partner_url']) ? sanitize_text_field(wp_unslash($_POST['partner_url'])) : '';
+    if ($url && !preg_match('#^https?://#i', $url)) {
+        $url = 'https://' . $url;
+    }
+    update_post_meta($post_id, 'partner_url', $url);
+});
+
 add_shortcode('partners_list', function () {
     $query = new WP_Query([
         'post_type' => 'partner',
@@ -469,7 +487,14 @@ add_shortcode('partners_list', function () {
         $cat_terms = wp_get_post_terms(get_the_ID(), 'partner_category');
         $tag_text = $cat_terms ? $cat_terms[0]->name : '';
         echo '<div class="initiative-item">';
-        echo '<h3 class="fw-toc-heading" style="font-size:1rem;margin:0 0 4px;font-weight:500;color:var(--text)">' . get_the_title() . '</h3>';
+        $partner_url = get_post_meta(get_the_ID(), 'partner_url', true);
+        $title = get_the_title();
+        if ($partner_url) {
+            $title = '<a href="' . esc_url($partner_url) . '" target="_blank" rel="noopener">' . $title . '</a>';
+        } else {
+            $title = '<a href="' . esc_url(home_url('/partners/')) . '">' . $title . '</a>';
+        }
+        echo '<h3 class="fw-toc-heading" style="font-size:1rem;margin:0 0 4px;font-weight:500;color:var(--text)">' . $title . '</h3>';
         if ($tag_text) echo '<span class="tag">' . esc_html($tag_text) . '</span>';
         echo '<p>' . (get_the_excerpt() ?: get_the_content()) . '</p>';
         echo '</div>';
