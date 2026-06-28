@@ -455,18 +455,18 @@ add_filter('manage_edit-partner_sortable_columns', function ($columns) {
 add_action('add_meta_boxes', function () {
     add_meta_box('partner_url', 'Сайт партнёра', function ($post) {
         $url = get_post_meta($post->ID, 'partner_url', true);
-        echo '<p><label>URL сайта:<br><input type="url" name="partner_url" value="' . esc_attr($url) . '" style="width:100%" placeholder="https://example.com"></label></p>';
+        echo '<p><label>URL сайта:<br><input type="text" name="partner_url" value="' . esc_attr($url) . '" style="width:100%" placeholder="axiiom.ru (https:// добавится автоматически)"></label></p>';
     }, 'partner', 'normal', 'default');
 });
 
 add_action('save_post_partner', function ($post_id) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
     if (!current_user_can('edit_post', $post_id)) return;
-    $url = isset($_POST['partner_url']) ? sanitize_text_field(wp_unslash($_POST['partner_url'])) : '';
+    $url = isset($_POST['partner_url']) ? trim(wp_unslash($_POST['partner_url'])) : '';
     if ($url && !preg_match('#^https?://#i', $url)) {
         $url = 'https://' . $url;
     }
-    update_post_meta($post_id, 'partner_url', $url);
+    update_post_meta($post_id, 'partner_url', esc_url_raw($url));
 });
 
 add_shortcode('partners_list', function () {
