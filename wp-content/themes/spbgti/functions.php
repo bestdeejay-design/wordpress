@@ -494,19 +494,16 @@ add_action('manage_initiative_posts_custom_column', function ($column, $post_id)
 
 // Shortcode to display initiatives
 add_shortcode('initiatives_list', function () {
-    $stages = get_terms(['taxonomy' => 'initiative_stage', 'hide_empty' => false]);
-    $stage_order = ['zaversheno', 'v-protsesse', 'zaplanirovano', 'ideya'];
-    $stage_labels = [
-        'zaversheno'    => 'Завершённые инициативы',
-        'v-protsesse'   => 'Текущие инициативы',
-        'zaplanirovano' => 'Планируемые инициативы',
-        'ideya'         => 'Идеи',
-    ];
+    $stages = get_terms([
+        'taxonomy' => 'initiative_stage',
+        'hide_empty' => false,
+        'orderby' => 'term_id',
+        'order' => 'ASC',
+    ]);
 
     ob_start();
-    foreach ($stage_order as $slug) {
-        $term = get_term_by('slug', $slug, 'initiative_stage');
-        if (!$term) continue;
+    foreach ($stages as $term) {
+        $slug = $term->slug;
 
         $query = new WP_Query([
             'post_type' => 'initiative',
@@ -522,8 +519,7 @@ add_shortcode('initiatives_list', function () {
 
         if (!$query->have_posts()) continue;
 
-        $label = $stage_labels[$slug] ?? $term->name;
-        echo '<div class="content-section"><h2>' . esc_html($label) . '</h2>';
+        echo '<div class="content-section"><h2>' . esc_html($term->name) . '</h2>';
 
         while ($query->have_posts()) {
             $query->the_post();
