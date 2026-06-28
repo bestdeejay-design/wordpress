@@ -87,7 +87,7 @@ list($hr, $hg, $hb) = sscanf($hero_textbox_color, '#%02x%02x%02x');
       <div class="sidebar-widget" style="padding:0;overflow:hidden">
         <a href="https://spbti.ru/" target="_blank" style="display:block">
           <img src="<?php echo get_template_directory_uri(); ?>/assets/img/spbti_logo.png" alt="Санкт-Петербургский технологический институт" style="width:100%;display:block;padding:20px">
-          <div style="padding:10px 14px;font-size:0.8rem;color:var(--text-muted);text-align:center">Санкт-Петербургский государственный технологический институт &rarr;</div>
+          <div style="padding:10px 14px;font-size:0.8rem;color:var(--text-muted);text-align:center">Санкт-Петербургский Государственный Технологический Институт (СПбГТИ) &rarr;</div>
         </a>
       </div>
 
