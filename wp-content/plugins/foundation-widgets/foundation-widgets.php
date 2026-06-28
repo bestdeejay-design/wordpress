@@ -128,3 +128,15 @@ add_action("wp_enqueue_scripts", function () {
 .fw-partner-desc { margin:4px 0 0; font-size:0.8rem; color:var(--text-muted); }
 ");
 });
+
+add_filter("the_content", function ($content) {
+    if (!is_singular()) return $content;
+    return preg_replace_callback(
+        "/<h([1-3])([^>]*)>(.+?)<\/h[1-3]>/si",
+        function ($m) {
+            $id = sanitize_title(strip_tags($m[3]));
+            return "<h{$m[1]}{$m[2]} id=\"{$id}\">{$m[3]}</h{$m[1]}>";
+        },
+        $content
+    );
+});
