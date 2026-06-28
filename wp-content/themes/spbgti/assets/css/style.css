@@ -14,7 +14,7 @@
   --shadow-lg: rgba(12, 25, 41, 0.12);
 }
 
-html { overflow-y: scroll; scroll-behavior: smooth; }
+html { overflow-y: scroll; overflow-x: hidden; scroll-behavior: smooth; }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -24,7 +24,7 @@ body {
   line-height: 1.6;
   color: var(--text);
   background: var(--bg);
-  overflow-x: hidden;
+  overflow-x: visible;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
