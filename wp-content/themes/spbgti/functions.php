@@ -469,8 +469,8 @@ add_shortcode('partners_list', function () {
         $cat_terms = wp_get_post_terms(get_the_ID(), 'partner_category');
         $tag_text = $cat_terms ? $cat_terms[0]->name : '';
         echo '<div class="initiative-item">';
+        echo '<h3 class="fw-toc-heading" style="font-size:1rem;margin:0 0 4px;font-weight:500;color:var(--text)">' . get_the_title() . '</h3>';
         if ($tag_text) echo '<span class="tag">' . esc_html($tag_text) . '</span>';
-        echo '<h4>' . get_the_title() . '</h4>';
         echo '<p>' . (get_the_excerpt() ?: get_the_content()) . '</p>';
         echo '</div>';
     }

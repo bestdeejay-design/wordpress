@@ -45,7 +45,7 @@ class FW_TOC_Widget extends WP_Widget {
         foreach ($matches as $i => $m) {
             $level = (int)$m[1];
             $text = strip_tags($m[2]);
-            $anchor = "toc-" . substr(preg_replace('/[^a-z0-9-]/', "", str_replace(" ", "-", strtr(mb_strtolower($text, "UTF-8"), $cyr_map))), 0, 40);
+            $anchor = "toc-" . substr(preg_replace('/[^a-z0-9-]/', "", str_replace(" ", "-", strtr(mb_strtolower($text, "UTF-8"), $cyr_map))), 0, 80);
             $diff = $level - $prev;
             if ($diff > 0) echo str_repeat('<ul>', $diff);
             elseif ($diff < 0) echo str_repeat('</li></ul>', -$diff) . '</li>';
@@ -152,7 +152,7 @@ add_filter("the_content", function ($content) {
         "/<h([1-3])([^>]*)>(.+?)<\/h[1-3]>/si",
         function ($m) {
             $txt = strip_tags($m[3]);
-            $id = "toc-" . substr(preg_replace('/[^a-z0-9-]/', "", str_replace(" ", "-", strtr(mb_strtolower($txt, "UTF-8"), $GLOBALS["cyr_map"]))), 0, 40);
+            $id = "toc-" . substr(preg_replace('/[^a-z0-9-]/', "", str_replace(" ", "-", strtr(mb_strtolower($txt, "UTF-8"), $GLOBALS["cyr_map"]))), 0, 80);
             return "<h{$m[1]}{$m[2]} id=\"{$id}\">{$m[3]}</h{$m[1]}>";
         },
         $content
