@@ -21,6 +21,7 @@ class FW_TOC_Widget extends WP_Widget {
     }
     public function widget($args, $instance) {
         if (!is_singular()) return;
+        if (is_page("partners")) return;
         global $cyr_map;
         $post_id = get_the_ID();
         $content = get_post_field("post_content", $post_id);
@@ -75,6 +76,7 @@ class FW_Partners_Widget extends WP_Widget {
         parent::__construct("fw_partners", "Партнёры", ["description" => "Список партнёров фонда"]);
     }
     public function widget($args, $instance) {
+        if (!is_front_page() && !is_page("partners")) return;
         $query = new WP_Query([
             "post_type" => "partner",
             "posts_per_page" => !empty($instance["count"]) ? (int)$instance["count"] : -1,
