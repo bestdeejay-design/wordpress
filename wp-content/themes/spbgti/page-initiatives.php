@@ -1,4 +1,5 @@
 <?php /* Template Name: Инициативы */
+add_filter("fw_toc_reverse", "__return_true");
 get_header(); while (have_posts()) : the_post(); ?>
 
 <div class="page-banner">

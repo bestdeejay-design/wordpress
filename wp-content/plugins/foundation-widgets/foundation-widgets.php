@@ -24,6 +24,10 @@ class FW_TOC_Widget extends WP_Widget {
         preg_match_all("/<h([1-3])(?:[^>]*)>(.+?)<\/h[1-3]>/si", $content, $matches, PREG_SET_ORDER);
         if (empty($matches)) return;
 
+        if (apply_filters("fw_toc_reverse", false, $post_id)) {
+            $matches = array_reverse($matches);
+        }
+
         echo $args["before_widget"];
         $title = !empty($instance["title"]) ? $instance["title"] : "Содержание";
         echo $args["before_title"] . esc_html($title) . $args["after_title"];
