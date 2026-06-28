@@ -20,7 +20,9 @@ get_header(); while (have_posts()) : the_post(); ?>
     </aside>
 
     <main class="center-content">
-      <?php echo do_shortcode('[partners_list]'); ?>
+      <div class="content-section">
+        <?php the_content(); ?>
+      </div>
     </main>
 
     <aside class="sidebar sidebar-right">
@@ -29,6 +31,7 @@ get_header(); while (have_posts()) : the_post(); ?>
         <p style="font-size:0.9rem;color:var(--text-muted)">Приглашаем организации и предприятия к сотрудничеству.</p>
         <a href="mailto:<?php echo antispambot(get_theme_mod('contact_email', 'mbrumina@rambler.ru')); ?>?subject=<?php echo urlencode('Партнёрство с фондом'); ?>" style="display:inline-block;margin-top:12px;padding:10px 16px;background:var(--accent);color:var(--primary);border-radius:8px;font-weight:600">Стать партнёром</a>
       </div>
+      <?php if (is_active_sidebar('sidebar-right')) dynamic_sidebar('sidebar-right'); ?>
     </aside>
   </div>
 </div>
