@@ -7,6 +7,13 @@
 
 defined("ABSPATH") || exit;
 
+$cyr_map = [
+    "а"=>"a","б"=>"b","в"=>"v","г"=>"g","д"=>"d","е"=>"e","ё"=>"e","ж"=>"zh","з"=>"z","и"=>"i",
+    "й"=>"i","к"=>"k","л"=>"l","м"=>"m","н"=>"n","о"=>"o","п"=>"p","р"=>"r","с"=>"s","т"=>"t",
+    "у"=>"u","ф"=>"f","х"=>"kh","ц"=>"ts","ч"=>"ch","ш"=>"sh","щ"=>"shch","ъ"=>"","ы"=>"y",
+    "ь"=>"","э"=>"e","ю"=>"yu","я"=>"ya",
+];
+
 // Table of Contents Widget
 class FW_TOC_Widget extends WP_Widget {
     public function __construct() {
@@ -14,6 +21,7 @@ class FW_TOC_Widget extends WP_Widget {
     }
     public function widget($args, $instance) {
         if (!is_singular()) return;
+        global $cyr_map;
         $post_id = get_the_ID();
         $content = get_post_field("post_content", $post_id);
         if ($content) {
@@ -37,7 +45,7 @@ class FW_TOC_Widget extends WP_Widget {
         foreach ($matches as $i => $m) {
             $level = (int)$m[1];
             $text = strip_tags($m[2]);
-            $anchor = sanitize_title($text);
+            $anchor = "toc-" . substr(preg_replace('/[^a-z0-9-]/', "", str_replace(" ", "-", strtr(mb_strtolower($text, "UTF-8"), $cyr_map))), 0, 40);
             $diff = $level - $prev;
             if ($diff > 0) echo str_repeat('<ul>', $diff);
             elseif ($diff < 0) echo str_repeat('</li></ul>', -$diff) . '</li>';
@@ -142,7 +150,8 @@ add_filter("the_content", function ($content) {
     return preg_replace_callback(
         "/<h([1-3])([^>]*)>(.+?)<\/h[1-3]>/si",
         function ($m) {
-            $id = sanitize_title(strip_tags($m[3]));
+            $txt = strip_tags($m[3]);
+            $id = "toc-" . substr(preg_replace('/[^a-z0-9-]/', "", str_replace(" ", "-", strtr(mb_strtolower($txt, "UTF-8"), $GLOBALS["cyr_map"]))), 0, 40);
             return "<h{$m[1]}{$m[2]} id=\"{$id}\">{$m[3]}</h{$m[1]}>";
         },
         $content
