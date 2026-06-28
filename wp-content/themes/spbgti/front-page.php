@@ -80,30 +80,7 @@ list($hr, $hg, $hb) = sscanf($hero_textbox_color, '#%02x%02x%02x');
         <?php endif; ?>
       </div>
 
-      <?php
-      $partners = new WP_Query([
-          'post_type' => 'partner',
-          'posts_per_page' => -1,
-          'orderby' => 'menu_order',
-          'order' => 'ASC',
-      ]);
-      if ($partners->have_posts()) : ?>
-      <div class="content-section">
-        <h2>Наши партнёры</h2>
-        <?php while ($partners->have_posts()) : $partners->the_post();
-          $cats = wp_get_post_terms(get_the_ID(), 'partner_category');
-          $cat_name = $cats ? $cats[0]->name : '';
-        ?>
-        <div class="initiative-item">
-          <?php if ($cat_name) : ?><span class="tag"><?php echo esc_html($cat_name); ?></span><?php endif; ?>
-          <h4><?php the_title(); ?></h4>
-          <?php $excerpt = get_the_excerpt(); if ($excerpt) : ?>
-          <p><?php echo esc_html($excerpt); ?></p>
-          <?php endif; ?>
-        </div>
-        <?php endwhile; wp_reset_postdata(); ?>
-      </div>
-      <?php endif; ?>
+
     </main>
 
     <aside class="sidebar sidebar-right">
