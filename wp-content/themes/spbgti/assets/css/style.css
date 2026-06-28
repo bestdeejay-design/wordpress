@@ -216,7 +216,7 @@ header { background: var(--primary); padding: 0; position: sticky; top: 0; z-ind
 .widget_calendar th, .widget_calendar td { text-align: center; padding: 6px; }
 .widget_calendar th { background: var(--primary); color: #fff; font-weight: 600; }
 .widget_calendar td { background: var(--bg); }
-.widget_calendar #today { background: var(--accent); color: var(--primary); font-weight: 700; }
+.widget_calendar #today { background: var(--accent); color: #fff; font-weight: 700; border-radius: 4px; }
 .widget_calendar a { font-weight: 700; }
 .widget_calendar .pad { background: transparent; }
 .stats-widget { display: flex; flex-direction: column; gap: 6px; }

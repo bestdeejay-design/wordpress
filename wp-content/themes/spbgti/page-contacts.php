@@ -1,10 +1,10 @@
-<?php /* Template Name: Программы */
+<?php /* Template Name: Контакты */
 get_header(); while (have_posts()) : the_post(); ?>
 
 <div class="page-banner">
   <div class="container">
     <h1><?php the_title(); ?></h1>
-    <p>Образовательные инициативы и программы поддержки</p>
+    <p>Свяжитесь с нами</p>
   </div>
 </div>
 
