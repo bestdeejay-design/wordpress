@@ -23,7 +23,7 @@ jobs:
       - name: Deploy via rsync
         uses: burnett01/rsync-deployments@7.0.2
         with:
-          switches: -avz --delete --exclude='.git*' --exclude='.github' --exclude='docker-compose.dev.yml' --exclude='wp-content/uploads/'
+          switches: -avz --delete --exclude='.git*' --exclude='.github' --exclude='.env' --exclude='docker-compose.dev.yml' --exclude='wp-content/uploads/'
           path: ./
           remote_path: /home/archive/ti200.ru/
           remote_host: 85.143.101.97
