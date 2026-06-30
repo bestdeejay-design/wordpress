@@ -11,24 +11,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy via rsync
-        uses: burnett01/rsync-deployments@7.0.2
-        with:
-          switches: -avz --delete --exclude='.git*' --exclude='.github' --exclude='docker-compose.dev.yml'
-          path: ./
-          remote_path: /home/archive/ti200.ru/
-          remote_host: 85.143.101.97
-          remote_user: archive
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Fix permissions
+      - name: Fix permissions before deploy
         uses: appleboy/ssh-action@v1.2.2
         with:
           host: 85.143.101.97
           username: archive
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            sudo chown -R archive:archive /home/archive/ti200.ru/wp-content
+            sudo chown -R archive:archive /home/archive/ti200.ru/
+
+      - name: Deploy via rsync
+        uses: burnett01/rsync-deployments@7.0.2
+        with:
+          switches: -avz --delete --exclude='.git*' --exclude='.github' --exclude='docker-compose.dev.yml' --exclude='wp-content/uploads/'
+          path: ./
+          remote_path: /home/archive/ti200.ru/
+          remote_host: 85.143.101.97
+          remote_user: archive
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Restart containers
         uses: appleboy/ssh-action@v1.2.2
