@@ -1,14 +1,22 @@
 <?php /* Template Name: Галерея */
 get_header();
 
-$images = get_posts([
+$paged = max(1, get_query_var('paged'));
+$per_page = 30;
+
+$query = new WP_Query([
     'post_type' => 'attachment',
     'post_mime_type' => 'image',
-    'posts_per_page' => -1,
+    'posts_per_page' => $per_page,
+    'paged' => $paged,
     'post_status' => 'inherit',
     'orderby' => 'date',
     'order' => 'DESC',
+    'meta_query' => [
+        ['key' => '_show_in_gallery', 'value' => '1'],
+    ],
 ]);
+$images = $query->posts;
 ?>
 
 <div class="page-banner">
@@ -48,6 +56,19 @@ $images = get_posts([
           </div>
           <?php endforeach; ?>
         </div>
+
+        <?php if ($query->max_num_pages > 1) : ?>
+        <div class="pagination">
+          <?php echo paginate_links([
+              'total' => $query->max_num_pages,
+              'current' => $paged,
+              'mid_size' => 2,
+              'prev_text' => '&larr;',
+              'next_text' => '&rarr;',
+          ]); ?>
+        </div>
+        <?php endif; ?>
+
         <?php else : ?>
         <p style="color:var(--text-muted)">Фотографии появятся после проведения мероприятий.</p>
         <?php endif; ?>
@@ -56,4 +77,5 @@ $images = get_posts([
   </div>
 </div>
 
+<?php wp_reset_postdata(); ?>
 <?php get_footer(); ?>

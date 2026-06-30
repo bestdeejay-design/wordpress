@@ -216,7 +216,7 @@ header { background: var(--primary); padding: 0; position: sticky; top: 0; z-ind
 .widget_calendar th, .widget_calendar td { text-align: center; padding: 6px; }
 .widget_calendar th { background: var(--primary); color: #fff; font-weight: 600; }
 .widget_calendar td { background: var(--bg); }
-.widget_calendar #today { background: var(--accent); color: #fff; font-weight: 700; border-radius: 4px; }
+.widget_calendar #today, .widget_calendar #today a { background: var(--accent); color: #fff; font-weight: 700; border-radius: 4px; }
 .widget_calendar a { font-weight: 700; }
 .widget_calendar .pad { background: transparent; }
 .stats-widget { display: flex; flex-direction: column; gap: 6px; }
@@ -327,11 +327,11 @@ footer { background: var(--primary); color: #fff; padding: 40px 0 20px; margin-t
 
 /* Pagination */
 .pagination { display: flex; justify-content: center; gap: 6px; margin-top: 24px; }
-.pagination a, .pagination span { display: inline-flex; align-items: center; justify-content: center; min-width: 38px; height: 38px; padding: 0 10px; border-radius: 8px; font-size: 0.9rem; }
-.pagination a { background: var(--bg-card); color: var(--text); border: 1px solid var(--border); transition: background 0.2s, border-color 0.2s; }
-.pagination a:hover { background: var(--accent-soft); border-color: var(--accent); }
-.pagination .current { background: var(--accent); color: var(--primary); font-weight: 600; border: 1px solid var(--accent); }
-.pagination .dots { border: none; color: var(--text-muted); }
+.pagination a, .pagination span, .pagination .page-numbers { display: inline-flex; align-items: center; justify-content: center; min-width: 38px; height: 38px; padding: 0 10px; border-radius: 8px; font-size: 0.9rem; }
+.pagination a, .pagination .page-numbers:not(.current):not(.dots) { background: var(--bg-card); color: var(--text); border: 1px solid var(--border); transition: background 0.2s, border-color 0.2s; }
+.pagination a:hover, .pagination .page-numbers:not(.current):hover { background: var(--accent-soft); border-color: var(--accent); }
+.pagination .current, .pagination .page-numbers.current { background: var(--accent); color: var(--primary); font-weight: 600; border: 1px solid var(--accent); }
+.pagination .dots, .pagination .page-numbers.dots { border: none; color: var(--text-muted); }
 
 /* Responsive */
 @media (max-width: 1024px) {

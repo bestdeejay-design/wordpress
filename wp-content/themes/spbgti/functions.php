@@ -1004,3 +1004,69 @@ add_action('wp_dashboard_setup', function () {
         echo '<p><a href="' . admin_url('index.php?page=spbgti-help') . '" class="button">Полная справка</a></p>';
     });
 });
+
+// Gallery visibility meta
+add_action('add_attachment', function ($post_id) {
+    add_post_meta($post_id, '_show_in_gallery', 1, true);
+});
+
+add_filter('attachment_fields_to_edit', function ($form_fields, $post) {
+    $value = get_post_meta($post->ID, '_show_in_gallery', true);
+    if ($value === '') $value = 1;
+    $form_fields['show_in_gallery'] = [
+        'label' => 'В галерее',
+        'input' => 'html',
+        'html'  => '<label><input type="checkbox" name="attachments[' . $post->ID . '][show_in_gallery]" value="1" ' . checked($value, 1, false) . '> Показывать на странице галереи</label>',
+        'value' => $value,
+    ];
+    return $form_fields;
+}, 10, 2);
+
+add_filter('attachment_fields_to_save', function ($post, $attachment) {
+    if (isset($attachment['show_in_gallery'])) {
+        update_post_meta($post['ID'], '_show_in_gallery', 1);
+    } else {
+        update_post_meta($post['ID'], '_show_in_gallery', 0);
+    }
+    return $post;
+}, 10, 2);
+
+add_filter('manage_media_columns', function ($columns) {
+    $columns['show_in_gallery'] = 'В галерее';
+    return $columns;
+});
+
+add_action('manage_media_custom_column', function ($column_name, $post_id) {
+    if ($column_name === 'show_in_gallery') {
+        $value = get_post_meta($post_id, '_show_in_gallery', true);
+        $checked = $value == 1 ? ' checked' : '';
+        echo '<label><input type="checkbox" class="show-in-gallery-toggle" data-id="' . $post_id . '"' . $checked . '></label>';
+    }
+}, 10, 2);
+
+add_action('admin_print_footer_scripts', function () {
+    if (get_current_screen()->base !== 'upload') return;
+    ?>
+<script>
+document.addEventListener('change', function(e) {
+    if (e.target.classList.contains('show-in-gallery-toggle')) {
+        var data = new FormData();
+        data.append('action', 'toggle_show_in_gallery');
+        data.append('id', e.target.dataset.id);
+        data.append('value', e.target.checked ? 1 : 0);
+        navigator.sendBeacon(ajaxurl, data);
+    }
+});
+</script>
+    <?php
+});
+
+add_action('wp_ajax_toggle_show_in_gallery', function () {
+    $id = intval($_POST['id']);
+    $val = intval($_POST['value']);
+    if ($id && current_user_can('edit_post', $id)) {
+        update_post_meta($id, '_show_in_gallery', $val);
+        wp_die('1');
+    }
+    wp_die('0');
+});

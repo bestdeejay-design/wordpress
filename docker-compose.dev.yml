@@ -1,0 +1,16 @@
+services:
+  db:
+    volumes:
+      - dev_db_data:/var/lib/mysql
+
+  wordpress:
+    volumes:
+      - dev_wp_data:/var/www/html
+
+  nginx:
+    volumes:
+      - dev_wp_data:/var/www/html:ro
+
+volumes:
+  dev_db_data:
+  dev_wp_data:

@@ -50,4 +50,8 @@ services:
 
 volumes:
   db_data:
+    name: wordpress_db_data
+    external: true
   wp_data:
+    name: wordpress_wp_data
+    external: true

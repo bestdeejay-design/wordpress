@@ -14,9 +14,9 @@ jobs:
       - name: Deploy via rsync
         uses: burnett01/rsync-deployments@7.0.2
         with:
-          switches: -avz --delete --exclude='.git*' --exclude='.github'
+          switches: -avz --delete --exclude='.git*' --exclude='.github' --exclude='docker-compose.dev.yml'
           path: ./
-          remote_path: /home/archive/wordpress/
+          remote_path: /home/archive/ti200.ru/
           remote_host: 85.143.101.97
           remote_user: archive
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -28,5 +28,5 @@ jobs:
           username: archive
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /home/archive/wordpress
+            cd /home/archive/ti200.ru
             docker compose up -d
