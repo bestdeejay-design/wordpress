@@ -21,6 +21,15 @@ jobs:
           remote_user: archive
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      - name: Fix permissions
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: 85.143.101.97
+          username: archive
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            sudo chown -R archive:archive /home/archive/ti200.ru/wp-content
+
       - name: Restart containers
         uses: appleboy/ssh-action@v1.2.2
         with:
