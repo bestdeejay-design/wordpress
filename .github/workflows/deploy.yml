@@ -39,3 +39,15 @@ jobs:
           script: |
             cd /home/archive/ti200.ru
             docker compose up -d
+
+      - name: Fix uploads permissions
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: 85.143.101.97
+          username: archive
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            sleep 3
+            docker exec wp-app chown -R www-data:www-data /var/www/html/wp-content/uploads/ /var/www/html/wp-content/languages/ 2>/dev/null || echo "Retry..."
+            sleep 2
+            docker exec wp-app chown -R www-data:www-data /var/www/html/wp-content/uploads/ /var/www/html/wp-content/languages/
