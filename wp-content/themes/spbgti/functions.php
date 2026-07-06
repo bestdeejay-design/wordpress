@@ -1163,3 +1163,208 @@ add_action('wp_ajax_news_gallery_thumb', function () {
     if ($src) { wp_send_json(['src' => $src]); }
     wp_send_json(['src' => ''], 404);
 });
+
+add_action('init', function () {
+    register_post_type('team_member', [
+        'labels' => [
+            'name' => 'Члены команды',
+            'singular_name' => 'Член команды',
+            'add_new' => 'Добавить',
+            'add_new_item' => 'Новый член команды',
+            'edit_item' => 'Редактировать',
+            'all_items' => 'Все члены команды',
+        ],
+        'public' => false,
+        'show_ui' => true,
+        'show_in_menu' => true,
+        'menu_icon' => 'dashicons-groups',
+        'menu_position' => 25,
+        'supports' => ['title', 'editor', 'thumbnail', 'page-attributes'],
+        'has_archive' => false,
+        'rewrite' => false,
+    ]);
+
+    register_post_type('document', [
+        'labels' => [
+            'name' => 'Документы',
+            'singular_name' => 'Документ',
+            'add_new' => 'Добавить',
+            'add_new_item' => 'Новый документ',
+            'edit_item' => 'Редактировать',
+            'all_items' => 'Все документы',
+        ],
+        'public' => false,
+        'show_ui' => true,
+        'show_in_menu' => true,
+        'menu_icon' => 'dashicons-media-document',
+        'menu_position' => 26,
+        'supports' => ['title', 'editor'],
+        'has_archive' => false,
+        'rewrite' => false,
+    ]);
+});
+
+add_action('add_meta_boxes', function () {
+    add_meta_box('team_position', 'Должность', function ($post) {
+        $val = get_post_meta($post->ID, '_team_position', true);
+        wp_nonce_field('team_save', 'team_nonce');
+        echo '<input type="text" name="_team_position" value="' . esc_attr($val) . '" style="width:100%" placeholder="например, Председатель фонда">';
+    }, 'team_member', 'side', 'high');
+
+    add_meta_box('document_file', 'Файл документа', function ($post) {
+        $file_id = get_post_meta($post->ID, '_document_file_id', true);
+        wp_nonce_field('document_save', 'document_nonce');
+        $url = $file_id ? wp_get_attachment_url($file_id) : '';
+        $name = $file_id ? basename(get_attached_file($file_id)) : '';
+        echo '<div id="document-file-preview">';
+        if ($url) {
+            echo '<p><a href="' . esc_url($url) . '" target="_blank">' . esc_html($name) . '</a></p>';
+            echo '<p style="font-size:0.85rem;color:#666">ID: ' . $file_id . '</p>';
+        }
+        echo '</div>';
+        echo '<input type="hidden" name="_document_file_id" id="document-file-id" value="' . esc_attr($file_id) . '">';
+        echo '<button type="button" class="button" id="document-file-add">' . ($file_id ? 'Заменить файл' : 'Выбрать файл') . '</button>';
+        echo ' <button type="button" class="button" id="document-file-remove" style="' . ($file_id ? '' : 'display:none') . '">Удалить</button>';
+        ?>
+        <script>
+        document.getElementById('document-file-add')?.addEventListener('click', function() {
+            var frame = wp.media({ title: 'Файл документа', button: { text: 'Выбрать' }, library: { type: ['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','application/vnd.apple.pages'] } });
+            frame.on('select', function() {
+                var att = frame.state().get('selection').first().toJSON();
+                document.getElementById('document-file-id').value = att.id;
+                document.getElementById('document-file-preview').innerHTML = '<p><a href="' + att.url + '" target="_blank">' + att.filename + '</a></p><p style="font-size:0.85rem;color:#666">' + att.filesizeHumanReadable + '</p>';
+                document.getElementById('document-file-remove').style.display = '';
+            });
+            frame.open();
+        });
+        document.getElementById('document-file-remove')?.addEventListener('click', function() {
+            if (confirm('Удалить файл из документа?')) {
+                document.getElementById('document-file-id').value = '';
+                document.getElementById('document-file-preview').innerHTML = '';
+                this.style.display = 'none';
+            }
+        });
+        </script>
+        <?php
+    }, 'document', 'side', 'high');
+});
+
+function add_section_ids($content) {
+    $content = preg_replace(
+        '/(<p\b[^>]*)>(.*?Миссия.*?<\/p>)/iu',
+        '$1 id="mission">$2',
+        $content
+    );
+    $content = preg_replace(
+        '/(<p\b[^>]*)>(.*?Цель.*?<\/p>)/iu',
+        '$1 id="goal">$2',
+        $content
+    );
+    return $content;
+}
+
+function append_about_sections($content) {
+    if (!is_page('about')) return $content;
+
+    ob_start();
+
+    $team = get_posts([
+        'post_type' => 'team_member',
+        'posts_per_page' => -1,
+        'orderby' => 'menu_order',
+        'order' => 'ASC',
+    ]); ?>
+    <div class="content-section">
+        <h2>Команда</h2>
+        <div class="team-grid">
+            <?php foreach ($team as $member) :
+                $position = get_post_meta($member->ID, '_team_position', true);
+                $photo = get_the_post_thumbnail_url($member->ID, 'medium');
+            ?>
+            <div class="team-card">
+                <?php if ($photo) : ?>
+                    <img src="<?= esc_url($photo) ?>" alt="<?= esc_attr(get_the_title($member)) ?>" class="team-photo">
+                <?php endif; ?>
+                <h3><?= esc_html(get_the_title($member)) ?></h3>
+                <?php if ($position) : ?>
+                    <p class="team-position"><?= esc_html($position) ?></p>
+                <?php endif; ?>
+                <div class="team-bio"><?= wpautop(get_the_content(null, false, $member)) ?></div>
+            </div>
+            <?php endforeach; ?>
+            <?php if (empty($team)) : ?>
+                <p style="color:#888">Члены команды пока не добавлены.</p>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <?php
+    $docs = get_posts([
+        'post_type' => 'document',
+        'posts_per_page' => -1,
+        'orderby' => 'date',
+        'order' => 'DESC',
+    ]); ?>
+    <div class="content-section">
+        <h2>Документы</h2>
+        <ul class="documents-list">
+            <?php foreach ($docs as $doc) :
+                $file_id = get_post_meta($doc->ID, '_document_file_id', true);
+                $url = $file_id ? wp_get_attachment_url($file_id) : '';
+                $path = $file_id ? get_attached_file($file_id) : '';
+                $size = $path ? size_format(filesize($path)) : '';
+                $ext = $path ? strtoupper(pathinfo($path, PATHINFO_EXTENSION)) : '';
+            ?>
+            <li class="document-item">
+                <?php if ($url) : ?>
+                <a href="<?= esc_url($url) ?>" target="_blank" class="document-link">
+                    <span class="document-icon"><?= esc_html($ext) ?></span>
+                    <span class="document-title"><?= esc_html(get_the_title($doc)) ?></span>
+                    <?php if ($size) : ?>
+                        <span class="document-size"><?= esc_html($size) ?></span>
+                    <?php endif; ?>
+                </a>
+                <?php else : ?>
+                <span class="document-link" style="color:#bbb">
+                    <span class="document-icon" style="background:#bbb">—</span>
+                    <span class="document-title"><?= esc_html(get_the_title($doc)) ?></span>
+                </span>
+                <?php endif; ?>
+            </li>
+            <?php endforeach; ?>
+            <?php if (empty($docs)) : ?>
+                <p style="color:#888">Документы пока не загружены.</p>
+            <?php endif; ?>
+        </ul>
+    </div>
+
+    <?php return $content . ob_get_clean();
+}
+
+add_filter('fw_toc_content', function ($content, $post_id) {
+    if ($post_id != 6) return $content; // page ID 6 = О фонде
+    return $content . append_about_sections('');
+}, 10, 2);
+
+add_action('save_post', function ($post_id) {
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+
+    if (get_post_type($post_id) === 'team_member') {
+        if (!isset($_POST['team_nonce']) || !wp_verify_nonce($_POST['team_nonce'], 'team_save')) return;
+        if (isset($_POST['_team_position'])) {
+            update_post_meta($post_id, '_team_position', sanitize_text_field($_POST['_team_position']));
+        }
+    }
+
+    if (get_post_type($post_id) === 'document') {
+        if (!isset($_POST['document_nonce']) || !wp_verify_nonce($_POST['document_nonce'], 'document_save')) return;
+        if (isset($_POST['_document_file_id'])) {
+            update_post_meta($post_id, '_document_file_id', intval($_POST['_document_file_id']));
+        }
+    }
+});
+
+add_filter('upload_mimes', function ($mimes) {
+    $mimes['pages'] = 'application/vnd.apple.pages';
+    return $mimes;
+});
