@@ -29,15 +29,13 @@
         <?php the_content(); ?>
 
         <?php
-        $images = get_attached_media('image', get_the_ID());
-        $featured_id = get_post_thumbnail_id();
-        if ($images) :
+        $gallery_ids = get_post_meta(get_the_ID(), '_news_gallery', true);
+        if ($gallery_ids) :
+          $ids = array_filter(explode(',', $gallery_ids));
         ?>
         <div class="news-gallery">
-          <?php foreach ($images as $image) :
-            if ($image->ID == $featured_id) continue;
-          ?>
-          <img src="<?php echo wp_get_attachment_image_url($image->ID, 'medium'); ?>" data-full="<?php echo wp_get_attachment_image_url($image->ID, 'full'); ?>" alt="<?php echo esc_attr(get_post_meta($image->ID, '_wp_attachment_image_alt', true) ?: $image->post_title); ?>" loading="lazy">
+          <?php foreach ($ids as $id) : ?>
+          <img src="<?php echo wp_get_attachment_image_url($id, 'medium'); ?>" data-full="<?php echo wp_get_attachment_image_url($id, 'full'); ?>" alt="<?php echo esc_attr(get_post_meta($id, '_wp_attachment_image_alt', true) ?: get_the_title($id)); ?>" loading="lazy">
           <?php endforeach; ?>
         </div>
         <?php endif; ?>

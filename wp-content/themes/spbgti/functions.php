@@ -1070,3 +1070,96 @@ add_action('wp_ajax_toggle_show_in_gallery', function () {
     }
     wp_die('0');
 });
+
+add_action('add_meta_boxes', function () {
+    add_meta_box('news_gallery', 'Галерея новости', 'news_gallery_meta_box', 'post', 'side');
+});
+
+function news_gallery_meta_box($post) {
+    $images = get_post_meta($post->ID, '_news_gallery', true);
+    $ids = $images ? explode(',', $images) : [];
+    wp_nonce_field('news_gallery_save', 'news_gallery_nonce');
+    ?>
+    <div id="news-gallery-preview" style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px">
+      <?php foreach ($ids as $id): $src = wp_get_attachment_image_url($id, 'thumbnail'); if (!$src) continue; ?>
+        <div style="position:relative" data-id="<?php echo $id; ?>">
+          <img src="<?php echo $src; ?>" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:4px">
+          <span style="position:absolute;top:-4px;right:-4px;background:red;color:#fff;border-radius:50%;width:16px;height:16px;font-size:10px;line-height:16px;text-align:center;cursor:pointer" class="news-gallery-remove">&times;</span>
+        </div>
+      <?php endforeach; ?>
+    </div>
+    <input type="hidden" name="_news_gallery" id="news-gallery-ids" value="<?php echo esc_attr($images); ?>">
+    <button type="button" class="button" id="news-gallery-add">Выбрать изображения</button>
+    <p class="description" style="margin-top:6px">Выберите фото для миниатюр внизу новости</p>
+    <script>
+    document.getElementById('news-gallery-add')?.addEventListener('click', function() {
+      var frame = wp.media({ title: 'Галерея новости', button: { text: 'Добавить' }, multiple: true, library: { type: 'image' } });
+      frame.on('select', function() {
+        var ids = frame.state().get('selection').map(function(a) { return a.id; });
+        var current = document.getElementById('news-gallery-ids').value;
+        var all = current ? current.split(',').concat(ids) : ids;
+        document.getElementById('news-gallery-ids').value = all.join(',');
+        updatePreview(all);
+      });
+      frame.open();
+    });
+    document.querySelectorAll('.news-gallery-remove').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var id = this.parentElement.dataset.id;
+        var input = document.getElementById('news-gallery-ids');
+        var ids = input.value.split(',').filter(function(v) { return v != id; });
+        input.value = ids.join(',');
+        this.parentElement.remove();
+      });
+    });
+    function updatePreview(ids) {
+      var container = document.getElementById('news-gallery-preview');
+      container.innerHTML = '';
+      ids.forEach(function(id) {
+        if (!id) return;
+        var div = document.createElement('div');
+        div.style.cssText = 'position:relative';
+        div.dataset.id = id;
+        var img = document.createElement('img');
+        img.style.cssText = 'width:100%;aspect-ratio:1;object-fit:cover;border-radius:4px;background:var(--bg,#eee)';
+        div.appendChild(img);
+        var remove = document.createElement('span');
+        remove.innerHTML = '&times;';
+        remove.style.cssText = 'position:absolute;top:-4px;right:-4px;background:red;color:#fff;border-radius:50%;width:16px;height:16px;font-size:10px;line-height:16px;text-align:center;cursor:pointer';
+        remove.addEventListener('click', function() {
+          var input = document.getElementById('news-gallery-ids');
+          var ids = input.value.split(',').filter(function(v) { return v != id; });
+          input.value = ids.join(',');
+          div.remove();
+        });
+        div.appendChild(remove);
+        container.appendChild(div);
+        fetch('<?php echo admin_url('admin-ajax.php'); ?>?action=news_gallery_thumb&id=' + id)
+          .then(function(r) { return r.json(); })
+          .then(function(d) { if (d.src) img.src = d.src; });
+      });
+    }
+    </script>
+    <?php
+}
+
+add_action('admin_enqueue_scripts', function () {
+    if (get_current_screen()?->base === 'post' && get_current_screen()?->post_type === 'post') {
+        wp_enqueue_media();
+    }
+});
+
+add_action('save_post_post', function ($post_id) {
+    if (!isset($_POST['news_gallery_nonce']) || !wp_verify_nonce($_POST['news_gallery_nonce'], 'news_gallery_save')) return;
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+    $value = sanitize_text_field($_POST['_news_gallery'] ?? '');
+    update_post_meta($post_id, '_news_gallery', $value);
+});
+
+add_action('wp_ajax_news_gallery_thumb', function () {
+    $id = intval($_GET['id']);
+    $src = wp_get_attachment_image_url($id, 'thumbnail');
+    if ($src) { wp_send_json(['src' => $src]); }
+    wp_send_json(['src' => ''], 404);
+});
