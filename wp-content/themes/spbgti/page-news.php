@@ -2,7 +2,7 @@
 /* Template Name: Новости */
 get_header();
 $paged = get_query_var('paged') ?: 1;
-$news_query = new WP_Query(['post_type' => 'post', 'posts_per_page' => 20, 'paged' => $paged]);
+$news_query = new WP_Query(['post_type' => 'post', 'posts_per_page' => 20, 'paged' => $paged, 'category__not_in' => [34]]);
 ?>
 
 <div class="page-banner">

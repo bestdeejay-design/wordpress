@@ -62,7 +62,7 @@ list($hr, $hg, $hb) = sscanf($hero_textbox_color, '#%02x%02x%02x');
         <?php
         $news = new WP_Query([
             'posts_per_page' => 5,
-            'category__in' => get_terms(['taxonomy' => 'category', 'fields' => 'ids', 'hide_empty' => true]),
+            'category__not_in' => [34],
         ]);
         if ($news->have_posts()) : while ($news->have_posts()) : $news->the_post(); ?>
         <a href="<?php the_permalink(); ?>" class="news-card">

@@ -21,7 +21,7 @@
     <main class="center-content">
       <div class="content-section">
         <h2>Все новости</h2>
-        <?php if (have_posts()) : while (have_posts()) : the_post(); ?>
+        <?php if (have_posts()) : while (have_posts()) : the_post(); if (in_category(34)) continue; ?>
         <a href="<?php the_permalink(); ?>" class="news-card">
           <div class="news-text">
             <span class="date"><?php echo get_the_date('j F Y'); ?></span>

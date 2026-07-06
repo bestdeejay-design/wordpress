@@ -53,7 +53,7 @@
         <h3>Другие новости</h3>
         <ul class="quick-links">
           <?php
-          $recent = new WP_Query(['posts_per_page' => 5, 'post__not_in' => [get_the_ID()]]);
+          $recent = new WP_Query(['posts_per_page' => 5, 'post__not_in' => [get_the_ID()], 'category__not_in' => [34]]);
           while ($recent->have_posts()) : $recent->the_post();
           ?>
           <li><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></li>
