@@ -58,7 +58,7 @@ list($hr, $hg, $hb) = sscanf($hero_textbox_color, '#%02x%02x%02x');
 
     <main class="center-content">
       <div class="content-section">
-        <h2>Последние новости</h2>
+        <h2>Новости</h2>
         <?php
         $news = new WP_Query([
             'posts_per_page' => 5,
