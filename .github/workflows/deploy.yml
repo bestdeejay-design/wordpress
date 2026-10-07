@@ -11,6 +11,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate docker-compose
+        run: |
+          DB_PASSWORD=x DB_ROOT_PASSWORD=x \
+          docker compose -f docker-compose.yml config -q
+
+      - name: PHP syntax check
+        continue-on-error: true
+        run: |
+          find wp-content -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null
+
+      - name: Pre-deploy backup
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: 85.143.101.97
+          username: archive
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: /home/archive/backup/make-backup.sh
+
       - name: Fix permissions before deploy
         uses: appleboy/ssh-action@v1.2.2
         with:
