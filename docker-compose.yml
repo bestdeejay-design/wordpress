@@ -36,9 +36,8 @@ services:
     image: nginx:alpine
     container_name: wp-nginx
     restart: unless-stopped
-    ports:
-      - "8080:80"
-      - "8443:443"
+    # Внешние порты не публикуем: static-site проксирует ti200.ru напрямую
+    # в docker-сеть (proxy_pass http://wp-nginx:80). Порты 8080/8443 наружу — легаси, закрыто 09.10.2026 (P1-1).
     volumes:
       - wp_data:/var/www/html:ro
       - ./wp-content:/var/www/html/wp-content:ro
