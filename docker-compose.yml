@@ -46,6 +46,14 @@ services:
       - /home/archive/certs:/etc/nginx/certs:ro
     depends_on:
       - wordpress
+    networks:
+      - default
+      - univeridru
+
+networks:
+  univeridru:
+    external: true
+    name: univeridru_default
 
 volumes:
   db_data:
